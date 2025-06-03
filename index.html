@@ -3,358 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản lý Hợp đồng & Tài chính</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: #333;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .header {
-            text-align: center;
-            color: white;
-            margin-bottom: 30px;
-        }
-
-        .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .nav-tabs {
-            display: flex;
-            background: white;
-            border-radius: 15px;
-            padding: 5px;
-            margin-bottom: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            overflow-x: auto;
-        }
-
-        .nav-tab {
-            flex: 1;
-            padding: 15px 20px;
-            text-align: center;
-            background: transparent;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-            min-width: 120px;
-        }
-
-        .nav-tab.active {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-
-        .tab-content {
-            display: none;
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-            backdrop-filter: blur(10px);
-        }
-
-        .tab-content.active {
-            display: block;
-            animation: fadeIn 0.5s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .form-group label {
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #555;
-        }
-
-        .form-group input, .form-group select, .form-group textarea {
-            padding: 12px 15px;
-            border: 2px solid #e1e5e9;
-            border-radius: 10px;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .btn {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-danger {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
-            color: white;
-        }
-
-        .btn-success {
-            background: linear-gradient(135deg, #51cf66 0%, #40c057 100%);
-            color: white;
-        }
-
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-        }
-
-        .data-table th, .data-table td {
-            padding: 15px;
-            text-align: left;
-            border-bottom: 1px solid #f1f3f4;
-        }
-
-        .data-table th {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .data-table tr:hover {
-            background: #f8f9fa;
-        }
-
-        .status-badge {
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .status-active { background: #d4edda; color: #155724; }
-        .status-completed { background: #cce5ff; color: #0056b3; }
-        .status-pending { background: #fff3cd; color: #856404; }
-        .status-cancelled { background: #f8d7da; color: #721c24; }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            transition: transform 0.3s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #667eea;
-            margin-bottom: 10px;
-        }
-
-        .stat-label {
-            color: #666;
-            font-weight: 500;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: #e9ecef;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            transition: width 0.3s ease;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-            
-            .header h1 {
-                font-size: 1.8rem;
-            }
-            
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .nav-tabs {
-                flex-wrap: wrap;
-            }
-            
-            .data-table {
-                font-size: 14px;
-            }
-            
-            .data-table th, .data-table td {
-                padding: 10px 8px;
-            }
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-        }
-
-        .modal-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            max-width: 500px;
-            width: 90%;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        }
-
-        .close {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 24px;
-            cursor: pointer;
-            color: #999;
-        }
-    </style>
+    <title>🏢 Hệ thống Quản lý Hợp đồng & Tài chính</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🏢 Hệ thống Quản lý Hợp đồng & Tài chính</h1>
-            <p>Theo dõi hợp đồng, doanh thu, chi phí và báo cáo tổng hợp</p>
-        </div>
+    <header>
+        <h1>🏢 Hệ thống Quản lý Hợp đồng & Tài chính</h1>
+        <p>Theo dõi hợp đồng, doanh thu, chi phí và báo cáo tổng hợp</p>
+    </header>
 
-        <div class="nav-tabs">
-            <button class="nav-tab active" onclick="showTab('contracts')">📋 Hợp đồng</button>
-            <button class="nav-tab" onclick="showTab('revenue')">💰 Doanh thu</button>
-            <button class="nav-tab" onclick="showTab('expenses')">💸 Chi phí</button>
-            <button class="nav-tab" onclick="showTab('reports')">📊 Báo cáo</button>
-            <button class="nav-tab" onclick="showTab('dashboard')">🎯 Tổng quan</button>
-        </div>
+    <nav>
+        <ul>
+            <li><a href="#projects">📂 Dự án</a></li>
+            <li><a href="#contracts">📋 Hợp đồng</a></li>
+            <li><a href="#revenue">💰 Doanh thu</a></li>
+            <li><a href="#expenses">💸 Chi phí</a></li>
+            <li><a href="#reports">📊 Báo cáo</a></li>
+            <li><a href="#overview">🎯 Tổng quan</a></li>
+        </ul>
+    </nav>
 
-        <!-- Tab Hợp đồng -->
-        <div id="contracts" class="tab-content active">
-            <h2>📋 Quản lý Hợp đồng</h2>
-            
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Tên hợp đồng</label>
-                    <input type="text" id="contractName" placeholder="Nhập tên hợp đồng">
-                </div>
-                <div class="form-group">
-                    <label>Đối tác</label>
-                    <input type="text" id="contractPartner" placeholder="Tên đối tác">
-                </div>
-                <div class="form-group">
-                    <label>Giá trị hợp đồng</label>
-                    <input type="number" id="contractValue" placeholder="0">
-                </div>
-                <div class="form-group">
-                    <label>Ngày bắt đầu</label>
-                    <input type="date" id="contractStartDate">
-                </div>
-                <div class="form-group">
-                    <label>Ngày kết thúc</label>
-                    <input type="date" id="contractEndDate">
-                </div>
-                <div class="form-group">
-                    <label>Trạng thái</label>
-                    <select id="contractStatus">
-                        <option value="active">Đang thực hiện</option>
-                        <option value="completed">Hoàn thành</option>
-                        <option value="pending">Chờ xử lý</option>
-                        <option value="cancelled">Đã hủy</option>
-                    </select>
-                </div>
+    <main>
+        <!-- Quản lý Dự án -->
+        <section id="projects">
+            <h2>📂 Quản lý Dự án</h2>
+            <div class="form-container">
+                <form id="projectForm">
+                    <label for="projectName">Tên dự án:</label>
+                    <input type="text" id="projectName" name="projectName" required>
+                    <label for="projectStartDate">Ngày bắt đầu:</label>
+                    <input type="date" id="projectStartDate" name="projectStartDate" required>
+                    <label for="projectEndDate">Ngày kết thúc:</label>
+                    <input type="date" id="projectEndDate" name="projectEndDate" required>
+                    <button type="submit">➕ Thêm dự án</button>
+                </form>
             </div>
-            
-            <div class="form-group">
-                <label>Mô tả</label>
-                <textarea id="contractDescription" rows="3" placeholder="Mô tả chi tiết hợp đồng"></textarea>
-            </div>
-            
-            <button class="btn btn-primary" onclick="addContract()">➕ Thêm hợp đồng</button>
-            
-            <table class="data-table" id="contractsTable">
+            <table id="projectTable">
                 <thead>
                     <tr>
+                        <th>Tên dự án</th>
+                        <th>Ngày bắt đầu</th>
+                        <th>Ngày kết thúc</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <button id="exportProjects">Xuất Excel</button>
+        </section>
+
+        <!-- Quản lý Hợp đồng -->
+        <section id="contracts">
+            <h2>📋 Quản lý Hợp đồng</h2>
+            <div class="form-container">
+                <form id="contractForm">
+                    <label for="project">Dự án:</label>
+                    <select id="project" name="project" required></select>
+                    <label for="contractName">Tên hợp đồng:</label>
+                    <input type="text" id="contractName" name="contractName" required>
+                    <label for="partner">Đối tác:</label>
+                    <input type="text" id="partner" name="partner" required>
+                    <label for="contractValue">Giá trị hợp đồng:</label>
+                    <input type="number" id="contractValue" name="contractValue" step="0.01" required>
+                    <label for="startDate">Ngày bắt đầu:</label>
+                    <input type="date" id="startDate" name="startDate" required>
+                    <label for="endDate">Ngày kết thúc:</label>
+                    <input type="date" id="endDate" name="endDate" required>
+                    <label for="status">Trạng thái:</label>
+                    <select id="status" name="status" required>
+                        <option value="Đang thực hiện">Đang thực hiện</option>
+                        <option value="Hoàn thành">Hoàn thành</option>
+                        <option value="Chờ xử lý">Chờ xử lý</option>
+                        <option value="Đã hủy">Đã hủy</option>
+                    </select>
+                    <label for="contractors">Nhà thầu:</label>
+                    <select id="contractors" name="contractors" multiple required></select>
+                    <label for="progress">Tiến độ (%):</label>
+                    <input type="number" id="progress" name="progress" min="0" max="100" value="0" required>
+                    <label for="description">Mô tả:</label>
+                    <textarea id="description" name="description"></textarea>
+                    <button type="submit">➕ Thêm hợp đồng</button>
+                </form>
+            </div>
+            <table id="contractTable">
+                <thead>
+                    <tr>
+                        <th>Dự án</th>
                         <th>Tên hợp đồng</th>
                         <th>Đối tác</th>
                         <th>Giá trị</th>
@@ -362,54 +97,46 @@
                         <th>Kết thúc</th>
                         <th>Trạng thái</th>
                         <th>Tiến độ</th>
+                        <th>Nhà thầu</th>
+                        <th>Doanh thu</th>
+                        <th>Chi phí</th>
                         <th>Thao tác</th>
                     </tr>
                 </thead>
-                <tbody id="contractsTableBody">
-                </tbody>
+                <tbody></tbody>
             </table>
-        </div>
+            <button id="exportContracts">Xuất Excel</button>
+        </section>
 
-        <!-- Tab Doanh thu -->
-        <div id="revenue" class="tab-content">
+        <!-- Quản lý Doanh thu -->
+        <section id="revenue">
             <h2>💰 Quản lý Doanh thu</h2>
-            
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Hợp đồng liên quan</label>
-                    <select id="revenueContract">
-                        <option value="">Chọn hợp đồng</option>
+            <div class="form-container">
+                <form id="revenueForm">
+                    <label for="revenueProject">Dự án:</label>
+                    <select id="revenueProject" name="revenueProject" required></select>
+                    <label for="revenueContract">Hợp đồng liên quan:</label>
+                    <select id="revenueContract" name="revenueContract" required></select>
+                    <label for="revenueAmount">Số tiền:</label>
+                    <input type="number" id="revenueAmount" name="revenueAmount" step="0.01" required>
+                    <label for="revenueDate">Ngày thu:</label>
+                    <input type="date" id="revenueDate" name="revenueDate" required>
+                    <label for="revenueType">Loại doanh thu:</label>
+                    <select id="revenueType" name="revenueType" required>
+                        <option value="Dịch vụ">Dịch vụ</option>
+                        <option value="Sản phẩm">Sản phẩm</option>
+                        <option value="Tư vấn">Tư vấn</option>
+                        <option value="Khác">Khác</option>
                     </select>
-                </div>
-                <div class="form-group">
-                    <label>Số tiền</label>
-                    <input type="number" id="revenueAmount" placeholder="0">
-                </div>
-                <div class="form-group">
-                    <label>Ngày thu</label>
-                    <input type="date" id="revenueDate">
-                </div>
-                <div class="form-group">
-                    <label>Loại doanh thu</label>
-                    <select id="revenueType">
-                        <option value="service">Dịch vụ</option>
-                        <option value="product">Sản phẩm</option>
-                        <option value="consulting">Tư vấn</option>
-                        <option value="other">Khác</option>
-                    </select>
-                </div>
+                    <label for="revenueNote">Ghi chú:</label>
+                    <textarea id="revenueNote" name="revenueNote"></textarea>
+                    <button type="submit">➕ Thêm doanh thu</button>
+                </form>
             </div>
-            
-            <div class="form-group">
-                <label>Ghi chú</label>
-                <textarea id="revenueNote" rows="2" placeholder="Ghi chú về khoản thu"></textarea>
-            </div>
-            
-            <button class="btn btn-primary" onclick="addRevenue()">➕ Thêm doanh thu</button>
-            
-            <table class="data-table" id="revenueTable">
+            <table id="revenueTable">
                 <thead>
                     <tr>
+                        <th>Dự án</th>
                         <th>Hợp đồng</th>
                         <th>Số tiền</th>
                         <th>Ngày thu</th>
@@ -418,53 +145,42 @@
                         <th>Thao tác</th>
                     </tr>
                 </thead>
-                <tbody id="revenueTableBody">
-                </tbody>
+                <tbody></tbody>
             </table>
-        </div>
+            <button id="exportRevenue">Xuất Excel</button>
+        </section>
 
-        <!-- Tab Chi phí -->
-        <div id="expenses" class="tab-content">
+        <!-- Quản lý Chi phí -->
+        <section id="expenses">
             <h2>💸 Quản lý Chi phí</h2>
-            
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Hợp đồng liên quan</label>
-                    <select id="expenseContract">
-                        <option value="">Chọn hợp đồng</option>
+            <div class="form-container">
+                <form id="expenseForm">
+                    <label for="expenseProject">Dự án:</label>
+                    <select id="expenseProject" name="expenseProject" required></select>
+                    <label for="expenseContract">Hợp đồng liên quan:</label>
+                    <select id="expenseContract" name="expenseContract" required></select>
+                    <label for="expenseAmount">Số tiền:</label>
+                    <input type="number" id="expenseAmount" name="expenseAmount" step="0.01" required>
+                    <label for="expenseDate">Ngày chi:</label>
+                    <input type="date" id="expenseDate" name="expenseDate" required>
+                    <label for="expenseType">Loại chi phí:</label>
+                    <select id="expenseType" name="expenseType" required>
+                        <option value="Vật liệu">Vật liệu</option>
+                        <option value="Nhân công">Nhân công</option>
+                        <option value="Vận chuyển">Vận chuyển</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Văn phòng">Văn phòng</option>
+                        <option value="Khác">Khác</option>
                     </select>
-                </div>
-                <div class="form-group">
-                    <label>Số tiền</label>
-                    <input type="number" id="expenseAmount" placeholder="0">
-                </div>
-                <div class="form-group">
-                    <label>Ngày chi</label>
-                    <input type="date" id="expenseDate">
-                </div>
-                <div class="form-group">
-                    <label>Loại chi phí</label>
-                    <select id="expenseType">
-                        <option value="material">Vật liệu</option>
-                        <option value="labor">Nhân công</option>
-                        <option value="transport">Vận chuyển</option>
-                        <option value="marketing">Marketing</option>
-                        <option value="office">Văn phòng</option>
-                        <option value="other">Khác</option>
-                    </select>
-                </div>
+                    <label for="expenseNote">Ghi chú:</label>
+                    <textarea id="expenseNote" name="expenseNote"></textarea>
+                    <button type="submit">➕ Thêm chi phí</button>
+                </form>
             </div>
-            
-            <div class="form-group">
-                <label>Ghi chú</label>
-                <textarea id="expenseNote" rows="2" placeholder="Ghi chú về khoản chi"></textarea>
-            </div>
-            
-            <button class="btn btn-primary" onclick="addExpense()">➕ Thêm chi phí</button>
-            
-            <table class="data-table" id="expenseTable">
+            <table id="expenseTable">
                 <thead>
                     <tr>
+                        <th>Dự án</th>
                         <th>Hợp đồng</th>
                         <th>Số tiền</th>
                         <th>Ngày chi</th>
@@ -473,586 +189,84 @@
                         <th>Thao tác</th>
                     </tr>
                 </thead>
-                <tbody id="expenseTableBody">
-                </tbody>
+                <tbody></tbody>
             </table>
-        </div>
+            <button id="exportExpenses">Xuất Excel</button>
+        </section>
 
-        <!-- Tab Báo cáo -->
-        <div id="reports" class="tab-content">
+        <!-- Báo cáo Tài chính -->
+        <section id="reports">
             <h2>📊 Báo cáo Tài chính</h2>
-            
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Loại báo cáo</label>
-                    <select id="reportType" onchange="generateReport()">
-                        <option value="monthly">Theo tháng</option>
-                        <option value="quarterly">Theo quý</option>
-                        <option value="yearly">Theo năm</option>
+            <div class="form-container">
+                <form id="reportForm">
+                    <label for="reportType">Loại báo cáo:</label>
+                    <select id="reportType" name="reportType" required>
+                        <option value="Theo tháng">Theo tháng</option>
+                        <option value="Theo quý">Theo quý</option>
+                        <option value="Theo năm">Theo năm</option>
                     </select>
-                </div>
-                <div class="form-group">
-                    <label>Thời gian</label>
-                    <input type="month" id="reportPeriod" onchange="generateReport()">
-                </div>
+                    <label for="reportPeriod">Thời gian:</label>
+                    <input type="month" id="reportPeriod" name="reportPeriod" required>
+                    <button type="submit">Tạo báo cáo</button>
+                </form>
             </div>
-            
-            <div class="stats-grid" id="reportStats">
-                <div class="stat-card">
-                    <div class="stat-value" id="totalRevenue">0 ₫</div>
-                    <div class="stat-label">Tổng doanh thu</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="totalExpenses">0 ₫</div>
-                    <div class="stat-label">Tổng chi phí</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="netProfit">0 ₫</div>
-                    <div class="stat-label">Lợi nhuận</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="taxPayable">0 ₫</div>
-                    <div class="stat-label">Thuế phải nộp (20%)</div>
-                </div>
+            <div id="reportSummary">
+                <p>Tổng doanh thu: <span id="totalRevenue">0 ₫</span></p>
+                <p>Tổng chi phí: <span id="totalExpenses">0 ₫</span></p>
+                <p>Lợi nhuận: <span id="profit">0 ₫</span></p>
+                <p>Thuế phải nộp (20%): <span id="tax">0 ₫</span></p>
             </div>
-            
-            <div id="reportDetails"></div>
-        </div>
+            <table id="reportDetails">
+                <thead>
+                    <tr>
+                        <th>Dự án</th>
+                        <th>Hợp đồng</th>
+                        <th>Doanh thu</th>
+                        <th>Chi phí</th>
+                        <th>Lợi nhuận</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <button id="exportReports">Xuất Excel</button>
+        </section>
 
-        <!-- Tab Tổng quan -->
-        <div id="dashboard" class="tab-content">
+        <!-- Tổng quan -->
+        <section id="overview">
             <h2>🎯 Tổng quan Hệ thống</h2>
-            
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-value" id="totalContracts">0</div>
-                    <div class="stat-label">Tổng hợp đồng</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="activeContracts">0</div>
-                    <div class="stat-label">Đang thực hiện</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="monthlyRevenue">0 ₫</div>
-                    <div class="stat-label">Doanh thu tháng</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="monthlyProfit">0 ₫</div>
-                    <div class="stat-label">Lợi nhuận tháng</div>
-                </div>
+            <div class="overview-stats">
+                <p>Tổng dự án: <span id="totalProjects">0</span></p>
+                <p>Tổng hợp đồng: <span id="totalContracts">0</span></p>
+                <p>Đang thực hiện: <span id="activeContracts">0</span></p>
+                <p>Doanh thu tháng: <span id="monthlyRevenue">0 ₫</span></p>
+                <p>Lợi nhuận tháng: <span id="monthlyProfit">0 ₫</span></p>
             </div>
-            
-            <h3>📈 Hợp đồng gần đây</h3>
-            <div id="recentContracts"></div>
-            
-            <h3>⚠️ Hợp đồng sắp hết hạn</h3>
-            <div id="expiringContracts"></div>
-        </div>
-    </div>
-
-    <!-- Modal cập nhật tiến độ -->
-    <div id="progressModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <h3>Cập nhật tiến độ hợp đồng</h3>
-            <div class="form-group">
-                <label>Tiến độ (%)</label>
-                <input type="range" id="progressSlider" min="0" max="100" value="0" oninput="updateProgressValue()">
-                <span id="progressValue">0%</span>
+            <div class="recent-contracts">
+                <h3>📈 Hợp đồng gần đây</h3>
+                <ul id="recentContracts"></ul>
             </div>
-            <button class="btn btn-primary" onclick="saveProgress()">Lưu tiến độ</button>
+            <div class="expiring-contracts">
+                <h3>⚠️ Hợp đồng sắp hết hạn</h3>
+                <ul id="expiringContracts"></ul>
+            </div>
+            <button id="exportOverview">Xuất Excel</button>
+        </section>
+
+        <!-- Modal Cập nhật Tiến độ -->
+        <div id="progressModal" class="modal">
+            <div class="modal-content">
+                <span class="close">×</span>
+                <h3>Cập nhật tiến độ hợp đồng</h3>
+                <form id="progressForm">
+                    <label for="progressValue">Tiến độ (%):</label>
+                    <input type="range" id="progressValue" name="progressValue" min="0" max="100" value="0">
+                    <span id="progressDisplay">0%</span>
+                    <button type="submit">Lưu tiến độ</button>
+                </form>
+            </div>
         </div>
-    </div>
+    </main>
 
-    <script>
-        // Dữ liệu trong bộ nhớ
-        let contracts = [];
-        let revenues = [];
-        let expenses = [];
-        let currentContractId = null;
-
-        // Khởi tạo
-        document.addEventListener('DOMContentLoaded', function() {
-            loadSampleData();
-            updateDashboard();
-            generateReport();
-            document.getElementById('reportPeriod').value = new Date().toISOString().slice(0, 7);
-        });
-
-        // Chuyển tab
-        function showTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.nav-tab').forEach(btn => btn.classList.remove('active'));
-            
-            document.getElementById(tabName).classList.add('active');
-            event.target.classList.add('active');
-            
-            if (tabName === 'dashboard') updateDashboard();
-            if (tabName === 'reports') generateReport();
-        }
-
-        // Thêm hợp đồng
-        function addContract() {
-            const contract = {
-                id: Date.now(),
-                name: document.getElementById('contractName').value,
-                partner: document.getElementById('contractPartner').value,
-                value: parseFloat(document.getElementById('contractValue').value) || 0,
-                startDate: document.getElementById('contractStartDate').value,
-                endDate: document.getElementById('contractEndDate').value,
-                status: document.getElementById('contractStatus').value,
-                description: document.getElementById('contractDescription').value,
-                progress: 0
-            };
-
-            if (!contract.name || !contract.partner) {
-                alert('Vui lòng nhập tên hợp đồng và đối tác!');
-                return;
-            }
-
-            contracts.push(contract);
-            updateContractTable();
-            updateContractSelects();
-            clearContractForm();
-            updateDashboard();
-        }
-
-        // Cập nhật bảng hợp đồng
-        function updateContractTable() {
-            const tbody = document.getElementById('contractsTableBody');
-            tbody.innerHTML = '';
-            
-            contracts.forEach(contract => {
-                const row = tbody.insertRow();
-                row.innerHTML = `
-                    <td><strong>${contract.name}</strong></td>
-                    <td>${contract.partner}</td>
-                    <td>${formatCurrency(contract.value)}</td>
-                    <td>${formatDate(contract.startDate)}</td>
-                    <td>${formatDate(contract.endDate)}</td>
-                    <td><span class="status-badge status-${contract.status}">${getStatusText(contract.status)}</span></td>
-                    <td>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${contract.progress}%"></div>
-                        </div>
-                        <small>${contract.progress}%</small>
-                    </td>
-                    <td>
-                        <button class="btn btn-success" onclick="openProgressModal(${contract.id})" style="margin-right: 5px; padding: 5px 10px;">📈</button>
-                        <button class="btn btn-danger" onclick="deleteContract(${contract.id})" style="padding: 5px 10px;">🗑️</button>
-                    </td>
-                `;
-            });
-        }
-
-        // Cập nhật dropdown hợp đồng
-        function updateContractSelects() {
-            const selects = ['revenueContract', 'expenseContract'];
-            selects.forEach(selectId => {
-                const select = document.getElementById(selectId);
-                select.innerHTML = '<option value="">Chọn hợp đồng</option>';
-                contracts.forEach(contract => {
-                    select.innerHTML += `<option value="${contract.id}">${contract.name} - ${contract.partner}</option>`;
-                });
-            });
-        }
-
-        // Thêm doanh thu
-        function addRevenue() {
-            const revenue = {
-                id: Date.now(),
-                contractId: document.getElementById('revenueContract').value,
-                amount: parseFloat(document.getElementById('revenueAmount').value) || 0,
-                date: document.getElementById('revenueDate').value,
-                type: document.getElementById('revenueType').value,
-                note: document.getElementById('revenueNote').value
-            };
-
-            if (revenue.amount <= 0) {
-                alert('Vui lòng nhập số tiền hợp lệ!');
-                return;
-            }
-
-            revenues.push(revenue);
-            updateRevenueTable();
-            clearRevenueForm();
-            updateDashboard();
-        }
-
-        // Cập nhật bảng doanh thu
-        function updateRevenueTable() {
-            const tbody = document.getElementById('revenueTableBody');
-            tbody.innerHTML = '';
-            
-            revenues.forEach(revenue => {
-                const contract = contracts.find(c => c.id == revenue.contractId);
-                const row = tbody.insertRow();
-                row.innerHTML = `
-                    <td>${contract ? contract.name : 'Không xác định'}</td>
-                    <td><strong>${formatCurrency(revenue.amount)}</strong></td>
-                    <td>${formatDate(revenue.date)}</td>
-                    <td>${getRevenueTypeText(revenue.type)}</td>
-                    <td>${revenue.note}</td>
-                    <td><button class="btn btn-danger" onclick="deleteRevenue(${revenue.id})" style="padding: 5px 10px;">🗑️</button></td>
-                `;
-            });
-        }
-
-        // Thêm chi phí
-        function addExpense() {
-            const expense = {
-                id: Date.now(),
-                contractId: document.getElementById('expenseContract').value,
-                amount: parseFloat(document.getElementById('expenseAmount').value) || 0,
-                date: document.getElementById('expenseDate').value,
-                type: document.getElementById('expenseType').value,
-                note: document.getElementById('expenseNote').value
-            };
-
-            if (expense.amount <= 0) {
-                alert('Vui lòng nhập số tiền hợp lệ!');
-                return;
-            }
-
-            expenses.push(expense);
-            updateExpenseTable();
-            clearExpenseForm();
-            updateDashboard();
-        }
-
-        // Cập nhật bảng chi phí
-        function updateExpenseTable() {
-            const tbody = document.getElementById('expenseTableBody');
-            tbody.innerHTML = '';
-            
-            expenses.forEach(expense => {
-                const contract = contracts.find(c => c.id == expense.contractId);
-                const row = tbody.insertRow();
-                row.innerHTML = `
-                    <td>${contract ? contract.name : 'Không xác định'}</td>
-                    <td><strong>${formatCurrency(expense.amount)}</strong></td>
-                    <td>${formatDate(expense.date)}</td>
-                    <td>${getExpenseTypeText(expense.type)}</td>
-                    <td>${expense.note}</td>
-                    <td><button class="btn btn-danger" onclick="deleteExpense(${expense.id})" style="padding: 5px 10px;">🗑️</button></td>
-                `;
-            });
-        }
-
-        // Tạo báo cáo
-        function generateReport() {
-            const reportType = document.getElementById('reportType').value;
-            const period = document.getElementById('reportPeriod').value;
-            
-            if (!period) return;
-            
-            let startDate, endDate;
-            const [year, month] = period.split('-');
-            
-            if (reportType === 'monthly') {
-                startDate = new Date(year, month - 1, 1);
-                endDate = new Date(year, month, 0);
-            } else if (reportType === 'quarterly') {
-                const quarter = Math.ceil(month / 3);
-                startDate = new Date(year, (quarter - 1) * 3, 1);
-                endDate = new Date(year, quarter * 3, 0);
-            } else {
-                startDate = new Date(year, 0, 1);
-                endDate = new Date(year, 11, 31);
-            }
-
-            const periodRevenues = revenues.filter(r => {
-                const date = new Date(r.date);
-                return date >= startDate && date <= endDate;
-            });
-
-            const periodExpenses = expenses.filter(e => {
-                const date = new Date(e.date);
-                return date >= startDate && date <= endDate;
-            });
-
-            const totalRevenue = periodRevenues.reduce((sum, r) => sum + r.amount, 0);
-            const totalExpenses = periodExpenses.reduce((sum, e) => sum + e.amount, 0);
-            const netProfit = totalRevenue - totalExpenses;
-            const taxPayable = netProfit > 0 ? netProfit * 0.2 : 0;
-
-            document.getElementById('totalRevenue').textContent = formatCurrency(totalRevenue);
-            document.getElementById('totalExpenses').textContent = formatCurrency(totalExpenses);
-            document.getElementById('netProfit').textContent = formatCurrency(netProfit);
-            document.getElementById('taxPayable').textContent = formatCurrency(taxPayable);
-        }
-
-        // Cập nhật dashboard
-        function updateDashboard() {
-            const currentMonth = new Date().toISOString().slice(0, 7);
-            const [year, month] = currentMonth.split('-');
-            const startDate = new Date(year, month - 1, 1);
-            const endDate = new Date(year, month, 0);
-
-            const monthlyRevenues = revenues.filter(r => {
-                const date = new Date(r.date);
-                return date >= startDate && date <= endDate;
-            });
-
-            const monthlyExpenses = expenses.filter(e => {
-                const date = new Date(e.date);
-                return date >= startDate && date <= endDate;
-            });
-
-            const monthlyRevenueTotal = monthlyRevenues.reduce((sum, r) => sum + r.amount, 0);
-            const monthlyExpenseTotal = monthlyExpenses.reduce((sum, e) => sum + e.amount, 0);
-            const monthlyProfitTotal = monthlyRevenueTotal - monthlyExpenseTotal;
-
-            document.getElementById('totalContracts').textContent = contracts.length;
-            document.getElementById('activeContracts').textContent = contracts.filter(c => c.status === 'active').length;
-            document.getElementById('monthlyRevenue').textContent = formatCurrency(monthlyRevenueTotal);
-            document.getElementById('monthlyProfit').textContent = formatCurrency(monthlyProfitTotal);
-
-            // Hợp đồng gần đây
-            const recentContracts = contracts.slice(-3).reverse();
-            const recentDiv = document.getElementById('recentContracts');
-            recentDiv.innerHTML = '';
-            recentContracts.forEach(contract => {
-                recentDiv.innerHTML += `
-                    <div style="background: #f8f9fa; padding: 15px; margin: 10px 0; border-radius: 10px; border-left: 4px solid #667eea;">
-                        <strong>${contract.name}</strong> - ${contract.partner}<br>
-                        <small>Giá trị: ${formatCurrency(contract.value)} | Trạng thái: ${getStatusText(contract.status)}</small>
-                    </div>
-                `;
-            });
-
-            // Hợp đồng sắp hết hạn
-            const today = new Date();
-            const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
-            const expiringContracts = contracts.filter(c => {
-                const endDate = new Date(c.endDate);
-                return endDate >= today && endDate <= nextWeek && c.status === 'active';
-            });
-
-            const expiringDiv = document.getElementById('expiringContracts');
-            expiringDiv.innerHTML = '';
-            if (expiringContracts.length === 0) {
-                expiringDiv.innerHTML = '<p style="color: #666;">Không có hợp đồng nào sắp hết hạn.</p>';
-            } else {
-                expiringContracts.forEach(contract => {
-                    expiringDiv.innerHTML += `
-                        <div style="background: #fff3cd; padding: 15px; margin: 10px 0; border-radius: 10px; border-left: 4px solid #ffc107;">
-                            <strong>${contract.name}</strong> - ${contract.partner}<br>
-                            <small>Hết hạn: ${formatDate(contract.endDate)} | Giá trị: ${formatCurrency(contract.value)}</small>
-                        </div>
-                    `;
-                });
-            }
-        }
-
-        // Modal tiến độ
-        function openProgressModal(contractId) {
-            currentContractId = contractId;
-            const contract = contracts.find(c => c.id === contractId);
-            document.getElementById('progressSlider').value = contract.progress;
-            document.getElementById('progressValue').textContent = contract.progress + '%';
-            document.getElementById('progressModal').style.display = 'block';
-        }
-
-        function closeModal() {
-            document.getElementById('progressModal').style.display = 'none';
-        }
-
-        function updateProgressValue() {
-            const value = document.getElementById('progressSlider').value;
-            document.getElementById('progressValue').textContent = value + '%';
-        }
-
-        function saveProgress() {
-            const progress = parseInt(document.getElementById('progressSlider').value);
-            const contract = contracts.find(c => c.id === currentContractId);
-            contract.progress = progress;
-            
-            if (progress === 100 && contract.status === 'active') {
-                contract.status = 'completed';
-            }
-            
-            updateContractTable();
-            closeModal();
-            updateDashboard();
-        }
-
-        // Xóa dữ liệu
-        function deleteContract(id) {
-            if (confirm('Bạn có chắc muốn xóa hợp đồng này?')) {
-                contracts = contracts.filter(c => c.id !== id);
-                updateContractTable();
-                updateContractSelects();
-                updateDashboard();
-            }
-        }
-
-        function deleteRevenue(id) {
-            if (confirm('Bạn có chắc muốn xóa khoản doanh thu này?')) {
-                revenues = revenues.filter(r => r.id !== id);
-                updateRevenueTable();
-                updateDashboard();
-            }
-        }
-
-        function deleteExpense(id) {
-            if (confirm('Bạn có chắc muốn xóa khoản chi phí này?')) {
-                expenses = expenses.filter(e => e.id !== id);
-                updateExpenseTable();
-                updateDashboard();
-            }
-        }
-
-        // Xóa form
-        function clearContractForm() {
-            document.getElementById('contractName').value = '';
-            document.getElementById('contractPartner').value = '';
-            document.getElementById('contractValue').value = '';
-            document.getElementById('contractStartDate').value = '';
-            document.getElementById('contractEndDate').value = '';
-            document.getElementById('contractStatus').value = 'active';
-            document.getElementById('contractDescription').value = '';
-        }
-
-        function clearRevenueForm() {
-            document.getElementById('revenueContract').value = '';
-            document.getElementById('revenueAmount').value = '';
-            document.getElementById('revenueDate').value = '';
-            document.getElementById('revenueType').value = 'service';
-            document.getElementById('revenueNote').value = '';
-        }
-
-        function clearExpenseForm() {
-            document.getElementById('expenseContract').value = '';
-            document.getElementById('expenseAmount').value = '';
-            document.getElementById('expenseDate').value = '';
-            document.getElementById('expenseType').value = 'material';
-            document.getElementById('expenseNote').value = '';
-        }
-
-        // Utility functions
-        function formatCurrency(amount) {
-            return new Intl.NumberFormat('vi-VN', {
-                style: 'currency',
-                currency: 'VND'
-            }).format(amount);
-        }
-
-        function formatDate(dateString) {
-            if (!dateString) return '';
-            return new Date(dateString).toLocaleDateString('vi-VN');
-        }
-
-        function getStatusText(status) {
-            const statusMap = {
-                'active': 'Đang thực hiện',
-                'completed': 'Hoàn thành',
-                'pending': 'Chờ xử lý',
-                'cancelled': 'Đã hủy'
-            };
-            return statusMap[status] || status;
-        }
-
-        function getRevenueTypeText(type) {
-            const typeMap = {
-                'service': 'Dịch vụ',
-                'product': 'Sản phẩm',
-                'consulting': 'Tư vấn',
-                'other': 'Khác'
-            };
-            return typeMap[type] || type;
-        }
-
-        function getExpenseTypeText(type) {
-            const typeMap = {
-                'material': 'Vật liệu',
-                'labor': 'Nhân công',
-                'transport': 'Vận chuyển',
-                'marketing': 'Marketing',
-                'office': 'Văn phòng',
-                'other': 'Khác'
-            };
-            return typeMap[type] || type;
-        }
-
-        // Dữ liệu mẫu
-        function loadSampleData() {
-            contracts = [
-                {
-                    id: 1,
-                    name: 'Phát triển Website ABC Corp',
-                    partner: 'ABC Corporation',
-                    value: 50000000,
-                    startDate: '2024-01-15',
-                    endDate: '2024-06-15',
-                    status: 'active',
-                    description: 'Phát triển website thương mại điện tử',
-                    progress: 65
-                },
-                {
-                    id: 2,
-                    name: 'Tư vấn IT cho XYZ Ltd',
-                    partner: 'XYZ Limited',
-                    value: 30000000,
-                    startDate: '2024-02-01',
-                    endDate: '2024-12-31',
-                    status: 'active',
-                    description: 'Tư vấn hệ thống thông tin',
-                    progress: 30
-                }
-            ];
-
-            revenues = [
-                {
-                    id: 1,
-                    contractId: 1,
-                    amount: 25000000,
-                    date: '2024-03-01',
-                    type: 'service',
-                    note: 'Thanh toán đợt 1'
-                },
-                {
-                    id: 2,
-                    contractId: 2,
-                    amount: 15000000,
-                    date: '2024-04-01',
-                    type: 'consulting',
-                    note: 'Thanh toán quý 1'
-                }
-            ];
-
-            expenses = [
-                {
-                    id: 1,
-                    contractId: 1,
-                    amount: 8000000,
-                    date: '2024-02-15',
-                    type: 'labor',
-                    note: 'Chi phí nhân công tháng 2'
-                },
-                {
-                    id: 2,
-                    contractId: 1,
-                    amount: 2000000,
-                    date: '2024-03-01',
-                    type: 'material',
-                    note: 'Mua máy chủ'
-                }
-            ];
-
-            updateContractTable();
-            updateContractSelects();
-            updateRevenueTable();
-            updateExpenseTable();
-        }
-
-        // Đóng modal khi click bên ngoài
-        window.onclick = function(event) {
-            const modal = document.getElementById('progressModal');
-            if (event.target === modal) {
-                closeModal();
-            }
-        }
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
