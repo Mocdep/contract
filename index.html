@@ -50,6 +50,23 @@
                 </thead>
                 <tbody></tbody>
             </table>
+            <div id="projectDetails" class="details-container">
+                <h3>Chi tiết dự án:</h3>
+                <select id="selectedProject" name="selectedProject" onchange="updateProjectDetails()">
+                    <option value="">Chọn dự án</option>
+                </select>
+                <table id="projectDetailTable">
+                    <thead>
+                        <tr>
+                            <th>Số hợp đồng</th>
+                            <th>Tổng doanh thu</th>
+                            <th>Tổng chi phí</th>
+                            <th>Lợi nhuận</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
             <button id="exportProjects">Xuất Excel</button>
         </section>
 
@@ -77,13 +94,14 @@
                     <input type="date" id="endDate" name="endDate" required>
                     <label for="status">Trạng thái:</label>
                     <select id="status" name="status" required>
-                        <option value="Đang thực hiện">Đang thực hiện</option>
-                        <option value="Hoàn thành">Hoàn thành</option>
-                        <option value="Chờ xử lý">Chờ xử lý</option>
-                        <option value="Đã hủy">Đã hủy</option>
+                        <option value="Vừa ký hợp đồng">Vừa ký hợp đồng</option>
+                        <option value="Đang thi công">Đang thi công</option>
+                        <option value="Đang nghiệm thu bàn giao">Đang nghiệm thu bàn giao</option>
+                        <option value="Đã nghiệm thu bàn giao đưa vào sử dụng">Đã nghiệm thu bàn giao đưa vào sử dụng</option>
+                        <option value="Đang trong thời gian bảo hành">Đang trong thời gian bảo hành</option>
+                        <option value="Đã hoàn thành toàn bộ nghĩa vụ">Đã hoàn thành toàn bộ nghĩa vụ</option>
+                        <option value="Hợp đồng bị chấm dứt dở dang">Hợp đồng bị chấm dứt dở dang</option>
                     </select>
-                    <label for="progress">Tiến độ (%):</label>
-                    <input type="number" id="progress" name="progress" min="0" max="100" value="0" required>
                     <label for="description">Mô tả:</label>
                     <textarea id="description" name="description"></textarea>
                     <button type="submit">➕ Thêm hợp đồng</button>
@@ -100,7 +118,6 @@
                         <th>Bắt đầu</th>
                         <th>Kết thúc</th>
                         <th>Trạng thái</th>
-                        <th>Tiến độ</th>
                         <th>Doanh thu</th>
                         <th>Chi phí</th>
                         <th>Thao tác</th>
@@ -223,9 +240,9 @@
                 <thead>
                     <tr>
                         <th>Dự án</th>
-                        <th>Hợp đồng</th>
-                        <th>Doanh thu</th>
-                        <th>Chi phí</th>
+                        <th>Số hợp đồng</th>
+                        <th>Tổng doanh thu</th>
+                        <th>Tổng chi phí</th>
                         <th>Lợi nhuận</th>
                     </tr>
                 </thead>
@@ -244,6 +261,23 @@
                 <p>Doanh thu tháng: <span id="monthlyRevenue">0 ₫</span></p>
                 <p>Lợi nhuận tháng: <span id="monthlyProfit">0 ₫</span></p>
             </div>
+            <div id="overviewDetails" class="details-container">
+                <h3>Chi tiết theo dự án:</h3>
+                <select id="overviewProject" name="overviewProject" onchange="updateOverviewDetails()">
+                    <option value="">Chọn dự án</option>
+                </select>
+                <table id="overviewDetailTable">
+                    <thead>
+                        <tr>
+                            <th>Số hợp đồng</th>
+                            <th>Tổng doanh thu</th>
+                            <th>Tổng chi phí</th>
+                            <th>Lợi nhuận</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
             <div class="recent-contracts">
                 <h3>📈 Hợp đồng gần đây</h3>
                 <ul id="recentContracts"></ul>
@@ -259,12 +293,19 @@
         <div id="progressModal" class="modal">
             <div class="modal-content">
                 <span class="close">×</span>
-                <h3>Cập nhật tiến độ hợp đồng</h3>
+                <h3>Cập nhật trạng thái hợp đồng</h3>
                 <form id="progressForm">
-                    <label for="progressValue">Tiến độ (%):</label>
-                    <input type="range" id="progressValue" name="progressValue" min="0" max="100" value="0">
-                    <span id="progressDisplay">0%</span>
-                    <button type="submit">Lưu tiến độ</button>
+                    <label for="progressValue">Trạng thái:</label>
+                    <select id="progressValue" name="progressValue" required>
+                        <option value="Vừa ký hợp đồng">Vừa ký hợp đồng</option>
+                        <option value="Đang thi công">Đang thi công</option>
+                        <option value="Đang nghiệm thu bàn giao">Đang nghiệm thu bàn giao</option>
+                        <option value="Đã nghiệm thu bàn giao đưa vào sử dụng">Đã nghiệm thu bàn giao đưa vào sử dụng</option>
+                        <option value="Đang trong thời gian bảo hành">Đang trong thời gian bảo hành</option>
+                        <option value="Đã hoàn thành toàn bộ nghĩa vụ">Đã hoàn thành toàn bộ nghĩa vụ</option>
+                        <option value="Hợp đồng bị chấm dứt dở dang">Hợp đồng bị chấm dứt dở dang</option>
+                    </select>
+                    <button type="submit">Lưu trạng thái</button>
                 </form>
             </div>
         </div>
@@ -294,13 +335,14 @@
                     <input type="date" id="editEndDate" name="editEndDate" required>
                     <label for="editStatus">Trạng thái:</label>
                     <select id="editStatus" name="editStatus" required>
-                        <option value="Đang thực hiện">Đang thực hiện</option>
-                        <option value="Hoàn thành">Hoàn thành</option>
-                        <option value="Chờ xử lý">Chờ xử lý</option>
-                        <option value="Đã hủy">Đã hủy</option>
+                        <option value="Vừa ký hợp đồng">Vừa ký hợp đồng</option>
+                        <option value="Đang thi công">Đang thi công</option>
+                        <option value="Đang nghiệm thu bàn giao">Đang nghiệm thu bàn giao</option>
+                        <option value="Đã nghiệm thu bàn giao đưa vào sử dụng">Đã nghiệm thu bàn giao đưa vào sử dụng</option>
+                        <option value="Đang trong thời gian bảo hành">Đang trong thời gian bảo hành</option>
+                        <option value="Đã hoàn thành toàn bộ nghĩa vụ">Đã hoàn thành toàn bộ nghĩa vụ</option>
+                        <option value="Hợp đồng bị chấm dứt dở dang">Hợp đồng bị chấm dứt dở dang</option>
                     </select>
-                    <label for="editProgress">Tiến độ (%):</label>
-                    <input type="number" id="editProgress" name="editProgress" min="0" max="100" required>
                     <label for="editDescription">Mô tả:</label>
                     <textarea id="editDescription" name="editDescription"></textarea>
                     <button type="submit">Lưu thay đổi</button>
