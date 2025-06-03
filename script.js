@@ -2,10 +2,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Khởi tạo dữ liệu
     let projects = JSON.parse(localStorage.getItem('projects')) || [];
     let contracts = JSON.parse(localStorage.getItem('contracts')) || [];
-    let contractors = JSON.parse(localStorage.getItem('contractors')) || [
-        { id: 1, name: 'Nhà thầu X' },
-        { id: 2, name: 'Nhà thầu Y' }
-    ];
     let revenues = JSON.parse(localStorage.getItem('revenues')) || [];
     let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
 
@@ -13,27 +9,28 @@ document.addEventListener('DOMContentLoaded', () => {
     const saveData = () => {
         localStorage.setItem('projects', JSON.stringify(projects));
         localStorage.setItem('contracts', JSON.stringify(contracts));
-        localStorage.setItem('contractors', JSON.stringify(contractors));
         localStorage.setItem('revenues', JSON.stringify(revenues));
         localStorage.setItem('expenses', JSON.stringify(expenses));
     };
 
     // Cập nhật dropdown
     const updateDropdowns = () => {
-        const projectSelects = document.querySelectorAll('#project, #revenueProject, #expenseProject');
-        const contractSelects = document.querySelectorAll('#revenueContract, #expenseContract');
-        const contractorSelect = document.getElementById('contractors');
+        const projectSelects = document.querySelectorAll('#project, #revenueProject, #expenseProject, #editProject, #editRevenueProject, #editExpenseProject');
+        const contractSelects = document.querySelectorAll('#revenueContract, #expenseContract, #editRevenueContract, #editExpenseContract');
 
         projectSelects.forEach(select => {
+            const currentValue = select.value;
             select.innerHTML = '<option value="">Chọn dự án</option>' + projects.map(p => `<option value="${p.id}">${p.name}</option>`).join('');
+            if (currentValue && projects.some(p => p.id == currentValue)) select.value = currentValue;
         });
 
-        contractorSelect.innerHTML = contractors.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-
         contractSelects.forEach(select => {
-            const projectId = select.parentElement.querySelector('[name$="Project"]').value;
-            select.innerHTML = '<option value="">Chọn hợp đồng</option>' +
-                contracts.filter(c => c.projectId == projectId).map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            const projectSelect = select.parentElement.querySelector('[name$="Project"]');
+            const projectId = projectSelect ? projectSelect.value : '';
+            const currentValue = select.value;
+            const filteredContracts = projectId ? contracts.filter(c => c.projectId == projectId && c.contractType === (select.id.includes('Revenue') ? 'Tạo doanh thu' : 'Tạo chi phí')) : [];
+            select.innerHTML = '<option value="">Chọn hợp đồng</option>' + filteredContracts.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            if (currentValue && filteredContracts.some(c => c.id == currentValue)) select.value = currentValue;
         });
     };
 
@@ -55,22 +52,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateContractTable = () => {
         const table = document.getElementById('contractTable').getElementsByTagName('tbody')[0];
         table.innerHTML = contracts.map(c => {
-            const totalRevenue = revenues.filter(r => r.contractId == c.id).reduce((sum, r) => sum + Number(r.amount), 0);
-            const totalExpense = expenses.filter(e => e.contractId == c.id).reduce((sum, e) => sum + Number(e.amount), 0);
+            const totalRevenue = c.contractType === 'Tạo doanh thu' ? c.value : 0;
+            const totalExpense = c.contractType === 'Tạo chi phí' ? c.value : 0;
             return `
             <tr>
                 <td>${projects.find(p => p.id == c.projectId)?.name || 'N/A'}</td>
                 <td>${c.name}</td>
                 <td>${c.partner}</td>
+                <td>${c.contractType}</td>
                 <td>${Number(c.value).toLocaleString('vi-VN')} ₫</td>
                 <td>${c.startDate}</td>
                 <td>${c.endDate}</td>
                 <td>${c.status}</td>
                 <td>${c.progress}%</td>
-                <td>${c.contractors.map(id => contractors.find(c => c.id == id)?.name).join(', ')}</td>
                 <td>${totalRevenue.toLocaleString('vi-VN')} ₫</td>
                 <td>${totalExpense.toLocaleString('vi-VN')} ₫</td>
-                <td><button onclick="showProgressModal(${c.id})">Cập nhật</button> <button onclick="deleteContract(${c.id})">Xóa</button></td>
+                <td>
+                    <button onclick="editContract(${c.id})">Sửa</button>
+                    <button onclick="showProgressModal(${c.id})">Cập nhật</button>
+                    <button class="delete" onclick="deleteContract(${c.id})">Xóa</button>
+                </td>
             </tr>
         `}).join('');
     };
@@ -80,13 +81,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const table = document.getElementById('revenueTable').getElementsByTagName('tbody')[0];
         table.innerHTML = revenues.map(r => `
             <tr>
-                <td>${projects.find(p => p.id == contracts.find(c => c.id == r.contractId)?.projectId)?.name || 'N/A'}</td>
+                <td>${projects.find(p => p.id == r.projectId)?.name || 'N/A'}</td>
                 <td>${contracts.find(c => c.id == r.contractId)?.name || 'N/A'}</td>
                 <td>${Number(r.amount).toLocaleString('vi-VN')} ₫</td>
                 <td>${r.date}</td>
                 <td>${r.type}</td>
                 <td>${r.note}</td>
-                <td><button onclick="deleteRevenue(${r.id})">Xóa</button></td>
+                <td>
+                    <button onclick="editRevenue(${r.id})">Sửa</button>
+                    <button class="delete" onclick="deleteRevenue(${r.id})">Xóa</button>
+                </td>
             </tr>
         `).join('');
     };
@@ -96,13 +100,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const table = document.getElementById('expenseTable').getElementsByTagName('tbody')[0];
         table.innerHTML = expenses.map(e => `
             <tr>
-                <td>${projects.find(p => p.id == contracts.find(c => c.id == e.contractId)?.projectId)?.name || 'N/A'}</td>
+                <td>${projects.find(p => p.id == e.projectId)?.name || 'N/A'}</td>
                 <td>${contracts.find(c => c.id == e.contractId)?.name || 'N/A'}</td>
                 <td>${Number(e.amount).toLocaleString('vi-VN')} ₫</td>
                 <td>${e.date}</td>
                 <td>${e.type}</td>
                 <td>${e.note}</td>
-                <td><button onclick="deleteExpense(${e.id})">Xóa</button></td>
+                <td>
+                    <button onclick="editExpense(${e.id})">Sửa</button>
+                    <button class="delete" onclick="deleteExpense(${e.id})">Xóa</button>
+                </td>
             </tr>
         `).join('');
     };
@@ -129,8 +136,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const projectContracts = contracts.filter(c => c.projectId == project.id);
             const projectRevenues = filteredRevenues.filter(r => projectContracts.some(c => c.id == r.contractId));
             const projectExpenses = filteredExpenses.filter(e => projectContracts.some(c => c.id == e.contractId));
-            const totalRevenue = projectRevenues.reduce((sum, r) => sum + Number(r.amount), 0);
-            const totalExpense = projectExpenses.reduce((sum, e) => sum + Number(e.amount), 0);
+            const contractRevenue = projectContracts.reduce((sum, c) => sum + (c.contractType === 'Tạo doanh thu' ? Number(c.value) : 0), 0);
+            const contractExpense = projectContracts.reduce((sum, c) => sum + (c.contractType === 'Tạo chi phí' ? Number(c.value) : 0), 0);
+            const totalRevenue = contractRevenue + projectRevenues.reduce((sum, r) => sum + Number(r.amount), 0);
+            const totalExpense = contractExpense + projectExpenses.reduce((sum, e) => sum + Number(e.amount), 0);
             return {
                 project: project.name,
                 contracts: projectContracts.map(c => c.name).join(', '),
@@ -166,9 +175,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateOverview = () => {
         const month = new Date().toISOString().slice(0, 7);
         const monthlyRevenues = revenues.filter(r => r.date.startsWith(month));
-        const monthlyExpenses = expenses.filter(e => e.date.startsWith(month));
-        const monthlyRevenue = monthlyRevenues.reduce((sum, r) => sum + Number(r.amount), 0);
-        const monthlyProfit = monthlyRevenue - monthlyExpenses.reduce((sum, e) => sum + Number(e.amount), 0);
+        const monthlyExpenses = expenses.filter(r => r.date.startsWith(month));
+        const contractRevenue = contracts.reduce((sum, c) => sum + (c.contractType === 'Tạo doanh thu' && c.startDate.startsWith(month) ? Number(c.value) : 0), 0);
+        const contractExpense = contracts.reduce((sum, c) => sum + (c.contractType === 'Tạo chi phí' && c.startDate.startsWith(month) ? Number(c.value) : 0), 0);
+        const monthlyRevenue = contractRevenue + monthlyRevenues.reduce((sum, r) => sum + Number(r.amount), 0);
+        const monthlyExpense = contractExpense + monthlyExpenses.reduce((sum, e) => sum + Number(e.amount), 0);
+        const monthlyProfit = monthlyRevenue - monthlyExpense;
 
         document.getElementById('totalProjects').textContent = projects.length;
         document.getElementById('totalContracts').textContent = contracts.length;
@@ -210,15 +222,15 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
         const contract = {
             id: Date.now(),
-            projectId: document.getElementById('project').value,
+            projectId: Number(document.getElementById('project').value),
             name: document.getElementById('contractName').value,
             partner: document.getElementById('partner').value,
+            contractType: document.getElementById('contractType').value,
             value: document.getElementById('contractValue').value,
             startDate: document.getElementById('startDate').value,
             endDate: document.getElementById('endDate').value,
             status: document.getElementById('status').value,
             progress: document.getElementById('progress').value,
-            contractors: Array.from(document.getElementById('contractors').selectedOptions).map(opt => Number(opt.value)),
             description: document.getElementById('description').value
         };
         contracts.push(contract);
@@ -228,13 +240,50 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('contractForm').reset();
     });
 
+    // Sửa hợp đồng
+    window.editContract = (id) => {
+        const modal = document.getElementById('editContractModal');
+        const form = document.getElementById('editContractForm');
+        const contract = contracts.find(c => c.id == id);
+
+        document.getElementById('editProject').value = contract.projectId;
+        document.getElementById('editContractName').value = contract.name;
+        document.getElementById('editPartner').value = contract.partner;
+        document.getElementById('editContractType').value = contract.contractType;
+        document.getElementById('editContractValue').value = contract.value;
+        document.getElementById('editStartDate').value = contract.startDate;
+        document.getElementById('editEndDate').value = contract.endDate;
+        document.getElementById('editStatus').value = contract.status;
+        document.getElementById('editProgress').value = contract.progress;
+        document.getElementById('editDescription').value = contract.description;
+
+        form.onsubmit = (e) => {
+            e.preventDefault();
+            contract.projectId = Number(document.getElementById('editProject').value);
+            contract.name = document.getElementById('editContractName').value;
+            contract.partner = document.getElementById('editPartner').value;
+            contract.contractType = document.getElementById('editContractType').value;
+            contract.value = document.getElementById('editContractValue').value;
+            contract.startDate = document.getElementById('editStartDate').value;
+            contract.endDate = document.getElementById('editEndDate').value;
+            contract.status = document.getElementById('editStatus').value;
+            contract.progress = document.getElementById('editProgress').value;
+            contract.description = document.getElementById('editDescription').value;
+            saveData();
+            updateContractTable();
+            updateOverview();
+            modal.style.display = 'none';
+        };
+        modal.style.display = 'block';
+    };
+
     // Thêm doanh thu
     document.getElementById('revenueForm').addEventListener('submit', (e) => {
         e.preventDefault();
         const revenue = {
             id: Date.now(),
-            projectId: document.getElementById('revenueProject').value,
-            contractId: document.getElementById('revenueContract').value,
+            projectId: Number(document.getElementById('revenueProject').value),
+            contractId: Number(document.getElementById('revenueContract').value),
             amount: document.getElementById('revenueAmount').value,
             date: document.getElementById('revenueDate').value,
             type: document.getElementById('revenueType').value,
@@ -243,18 +292,50 @@ document.addEventListener('DOMContentLoaded', () => {
         revenues.push(revenue);
         saveData();
         updateRevenueTable();
-        updateContractTable();
+        updateReport();
         updateOverview();
         document.getElementById('revenueForm').reset();
+        document.getElementById('revenueContract').innerHTML = '<option value="">Chọn hợp đồng</option>';
     });
+
+    // Sửa doanh thu
+    window.editRevenue = (id) => {
+        const modal = document.getElementById('editRevenueModal');
+        const form = document.getElementById('editRevenueForm');
+        const revenue = revenues.find(r => r.id == id);
+
+        document.getElementById('editRevenueProject').value = revenue.projectId;
+        updateDropdowns(); // Cập nhật dropdown hợp đồng
+        document.getElementById('editRevenueContract').value = revenue.contractId;
+        document.getElementById('editRevenueAmount').value = revenue.amount;
+        document.getElementById('editRevenueDate').value = revenue.date;
+        document.getElementById('editRevenueType').value = revenue.type;
+        document.getElementById('editRevenueNote').value = revenue.note;
+
+        form.onsubmit = (e) => {
+            e.preventDefault();
+            revenue.projectId = Number(document.getElementById('editRevenueProject').value);
+            revenue.contractId = Number(document.getElementById('editRevenueContract').value);
+            revenue.amount = document.getElementById('editRevenueAmount').value;
+            revenue.date = document.getElementById('editRevenueDate').value;
+            revenue.type = document.getElementById('editRevenueType').value;
+            revenue.note = document.getElementById('editRevenueNote').value;
+            saveData();
+            updateRevenueTable();
+            updateReport();
+            updateOverview();
+            modal.style.display = 'none';
+        };
+        modal.style.display = 'block';
+    };
 
     // Thêm chi phí
     document.getElementById('expenseForm').addEventListener('submit', (e) => {
         e.preventDefault();
         const expense = {
             id: Date.now(),
-            projectId: document.getElementById('expenseProject').value,
-            contractId: document.getElementById('expenseContract').value,
+            projectId: Number(document.getElementById('expenseProject').value),
+            contractId: Number(document.getElementById('expenseContract').value),
             amount: document.getElementById('expenseAmount').value,
             date: document.getElementById('expenseDate').value,
             type: document.getElementById('expenseType').value,
@@ -263,10 +344,42 @@ document.addEventListener('DOMContentLoaded', () => {
         expenses.push(expense);
         saveData();
         updateExpenseTable();
-        updateContractTable();
+        updateReport();
         updateOverview();
         document.getElementById('expenseForm').reset();
+        document.getElementById('expenseContract').innerHTML = '<option value="">Chọn hợp đồng</option>';
     });
+
+    // Sửa chi phí
+    window.editExpense = (id) => {
+        const modal = document.getElementById('editExpenseModal');
+        const form = document.getElementById('editExpenseForm');
+        const expense = expenses.find(e => e.id == id);
+
+        document.getElementById('editExpenseProject').value = expense.projectId;
+        updateDropdowns(); // Cập nhật dropdown hợp đồng
+        document.getElementById('editExpenseContract').value = expense.contractId;
+        document.getElementById('editExpenseAmount').value = expense.amount;
+        document.getElementById('editExpenseDate').value = expense.date;
+        document.getElementById('editExpenseType').value = expense.type;
+        document.getElementById('editExpenseNote').value = expense.note;
+
+        form.onsubmit = (e) => {
+            e.preventDefault();
+            expense.projectId = Number(document.getElementById('editExpenseProject').value);
+            expense.contractId = Number(document.getElementById('editExpenseContract').value);
+            expense.amount = document.getElementById('editExpenseAmount').value;
+            expense.date = document.getElementById('editExpenseDate').value;
+            expense.type = document.getElementById('editExpenseType').value;
+            expense.note = document.getElementById('editExpenseNote').value;
+            saveData();
+            updateExpenseTable();
+            updateReport();
+            updateOverview();
+            modal.style.display = 'none';
+        };
+        modal.style.display = 'block';
+    };
 
     // Xử lý báo cáo
     document.getElementById('reportForm').addEventListener('submit', (e) => {
@@ -305,7 +418,7 @@ document.addEventListener('DOMContentLoaded', () => {
         revenues = revenues.filter(r => r.id !== id);
         saveData();
         updateRevenueTable();
-        updateContractTable();
+        updateReport();
         updateOverview();
     };
 
@@ -314,7 +427,7 @@ document.addEventListener('DOMContentLoaded', () => {
         expenses = expenses.filter(e => e.id !== id);
         saveData();
         updateExpenseTable();
-        updateContractTable();
+        updateReport();
         updateOverview();
     };
 
@@ -341,12 +454,14 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Đóng modal
-    document.getElementsByClassName('close')[0].onclick = () => {
-        document.getElementById('progressModal').style.display = 'none';
-    };
+    document.querySelectorAll('.close').forEach(closeBtn => {
+        closeBtn.onclick = () => {
+            closeBtn.closest('.modal').style.display = 'none';
+        };
+    });
 
     // Liên kết dropdown dự án với hợp đồng
-    document.querySelectorAll('#revenueProject, #expenseProject').forEach(select => {
+    document.querySelectorAll('#revenueProject, #expenseProject, #editRevenueProject, #editExpenseProject').forEach(select => {
         select.addEventListener('change', updateDropdowns);
     });
 
@@ -361,16 +476,15 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('exportProjects').addEventListener('click', () => exportToExcel(projects, 'Projects'));
     document.getElementById('exportContracts').addEventListener('click', () => exportToExcel(contracts.map(c => ({
         project: projects.find(p => p.id == c.projectId)?.name,
-        ...c,
-        contractors: c.contractors.map(id => contractors.find(c => c.id == id)?.name).join(', ')
+        ...c
     })), 'Contracts'));
     document.getElementById('exportRevenue').addEventListener('click', () => exportToExcel(revenues.map(r => ({
-        project: projects.find(p => p.id == contracts.find(c => c.id == r.contractId)?.projectId)?.name,
+        project: projects.find(p => p.id == r.projectId)?.name,
         contract: contracts.find(c => c.id == r.contractId)?.name,
         ...r
     })), 'Revenue'));
     document.getElementById('exportExpenses').addEventListener('click', () => exportToExcel(expenses.map(e => ({
-        project: projects.find(p => p.id == contracts.find(c => c.id == e.contractId)?.projectId)?.name,
+        project: projects.find(p => p.id == e.projectId)?.name,
         contract: contracts.find(c => c.id == e.contractId)?.name,
         ...e
     })), 'Expenses'));
