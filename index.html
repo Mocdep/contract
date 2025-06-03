@@ -64,6 +64,11 @@
                     <input type="text" id="contractName" name="contractName" required>
                     <label for="partner">Đối tác:</label>
                     <input type="text" id="partner" name="partner" required>
+                    <label for="contractType">Loại hợp đồng:</label>
+                    <select id="contractType" name="contractType" required>
+                        <option value="Tạo doanh thu">Tạo doanh thu</option>
+                        <option value="Tạo chi phí">Tạo chi phí</option>
+                    </select>
                     <label for="contractValue">Giá trị hợp đồng:</label>
                     <input type="number" id="contractValue" name="contractValue" step="0.01" required>
                     <label for="startDate">Ngày bắt đầu:</label>
@@ -77,8 +82,6 @@
                         <option value="Chờ xử lý">Chờ xử lý</option>
                         <option value="Đã hủy">Đã hủy</option>
                     </select>
-                    <label for="contractors">Nhà thầu:</label>
-                    <select id="contractors" name="contractors" multiple required></select>
                     <label for="progress">Tiến độ (%):</label>
                     <input type="number" id="progress" name="progress" min="0" max="100" value="0" required>
                     <label for="description">Mô tả:</label>
@@ -92,12 +95,12 @@
                         <th>Dự án</th>
                         <th>Tên hợp đồng</th>
                         <th>Đối tác</th>
+                        <th>Loại hợp đồng</th>
                         <th>Giá trị</th>
                         <th>Bắt đầu</th>
                         <th>Kết thúc</th>
                         <th>Trạng thái</th>
                         <th>Tiến độ</th>
-                        <th>Nhà thầu</th>
                         <th>Doanh thu</th>
                         <th>Chi phí</th>
                         <th>Thao tác</th>
@@ -262,6 +265,103 @@
                     <input type="range" id="progressValue" name="progressValue" min="0" max="100" value="0">
                     <span id="progressDisplay">0%</span>
                     <button type="submit">Lưu tiến độ</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal Sửa Hợp đồng -->
+        <div id="editContractModal" class="modal">
+            <div class="modal-content">
+                <span class="close">×</span>
+                <h3>Sửa hợp đồng</h3>
+                <form id="editContractForm">
+                    <label for="editProject">Dự án:</label>
+                    <select id="editProject" name="editProject" required></select>
+                    <label for="editContractName">Tên hợp đồng:</label>
+                    <input type="text" id="editContractName" name="editContractName" required>
+                    <label for="editPartner">Đối tác:</label>
+                    <input type="text" id="editPartner" name="editPartner" required>
+                    <label for="editContractType">Loại hợp đồng:</label>
+                    <select id="editContractType" name="editContractType" required>
+                        <option value="Tạo doanh thu">Tạo doanh thu</option>
+                        <option value="Tạo chi phí">Tạo chi phí</option>
+                    </select>
+                    <label for="editContractValue">Giá trị hợp đồng:</label>
+                    <input type="number" id="editContractValue" name="editContractValue" step="0.01" required>
+                    <label for="editStartDate">Ngày bắt đầu:</label>
+                    <input type="date" id="editStartDate" name="editStartDate" required>
+                    <label for="editEndDate">Ngày kết thúc:</label>
+                    <input type="date" id="editEndDate" name="editEndDate" required>
+                    <label for="editStatus">Trạng thái:</label>
+                    <select id="editStatus" name="editStatus" required>
+                        <option value="Đang thực hiện">Đang thực hiện</option>
+                        <option value="Hoàn thành">Hoàn thành</option>
+                        <option value="Chờ xử lý">Chờ xử lý</option>
+                        <option value="Đã hủy">Đã hủy</option>
+                    </select>
+                    <label for="editProgress">Tiến độ (%):</label>
+                    <input type="number" id="editProgress" name="editProgress" min="0" max="100" required>
+                    <label for="editDescription">Mô tả:</label>
+                    <textarea id="editDescription" name="editDescription"></textarea>
+                    <button type="submit">Lưu thay đổi</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal Sửa Doanh thu -->
+        <div id="editRevenueModal" class="modal">
+            <div class="modal-content">
+                <span class="close">×</span>
+                <h3>Sửa doanh thu</h3>
+                <form id="editRevenueForm">
+                    <label for="editRevenueProject">Dự án:</label>
+                    <select id="editRevenueProject" name="editRevenueProject" required></select>
+                    <label for="editRevenueContract">Hợp đồng liên quan:</label>
+                    <select id="editRevenueContract" name="editRevenueContract" required></select>
+                    <label for="editRevenueAmount">Số tiền:</label>
+                    <input type="number" id="editRevenueAmount" name="editRevenueAmount" step="0.01" required>
+                    <label for="editRevenueDate">Ngày thu:</label>
+                    <input type="date" id="editRevenueDate" name="editRevenueDate" required>
+                    <label for="editRevenueType">Loại doanh thu:</label>
+                    <select id="editRevenueType" name="editRevenueType" required>
+                        <option value="Dịch vụ">Dịch vụ</option>
+                        <option value="Sản phẩm">Sản phẩm</option>
+                        <option value="Tư vấn">Tư vấn</option>
+                        <option value="Khác">Khác</option>
+                    </select>
+                    <label for="editRevenueNote">Ghi chú:</label>
+                    <textarea id="editRevenueNote" name="editRevenueNote"></textarea>
+                    <button type="submit">Lưu thay đổi</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal Sửa Chi phí -->
+        <div id="editExpenseModal" class="modal">
+            <div class="modal-content">
+                <span class="close">×</span>
+                <h3>Sửa chi phí</h3>
+                <form id="editExpenseForm">
+                    <label for="editExpenseProject">Dự án:</label>
+                    <select id="editExpenseProject" name="editExpenseProject" required></select>
+                    <label for="editExpenseContract">Hợp đồng liên quan:</label>
+                    <select id="editExpenseContract" name="editExpenseContract" required></select>
+                    <label for="editExpenseAmount">Số tiền:</label>
+                    <input type="number" id="editExpenseAmount" name="editExpenseAmount" step="0.01" required>
+                    <label for="editExpenseDate">Ngày chi:</label>
+                    <input type="date" id="editExpenseDate" name="editExpenseDate" required>
+                    <label for="editExpenseType">Loại chi phí:</label>
+                    <select id="editExpenseType" name="editExpenseType" required>
+                        <option value="Vật liệu">Vật liệu</option>
+                        <option value="Nhân công">Nhân công</option>
+                        <option value="Vận chuyển">Vận chuyển</option>
+                        <option value="Marketing">Marketing</option>
+                        <option value="Văn phòng">Văn phòng</option>
+                        <option value="Khác">Khác</option>
+                    </select>
+                    <label for="editExpenseNote">Ghi chú:</label>
+                    <textarea id="editExpenseNote" name="editExpenseNote"></textarea>
+                    <button type="submit">Lưu thay đổi</button>
                 </form>
             </div>
         </div>
