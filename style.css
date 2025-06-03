@@ -134,10 +134,19 @@ td button {
     padding: 5px 10px;
     border-radius: 4px;
     cursor: pointer;
+    margin-right: 5px;
 }
 
 td button:hover {
     background-color: #45a049;
+}
+
+td button.delete {
+    background-color: #f44336;
+}
+
+td button.delete:hover {
+    background-color: #d32f2f;
 }
 
 button[id^="export"] {
@@ -184,12 +193,14 @@ button[id^="export"]:hover {
 
 .modal-content {
     background-color: white;
-    margin: 15% auto;
+    margin: 5% auto;
     padding: 20px;
     width: 90%;
-    max-width: 500px;
+    max-width: 600px;
     border-radius: 8px;
     position: relative;
+    max-height: 80vh;
+    overflow-y: auto;
 }
 
 .close {
